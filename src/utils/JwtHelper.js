@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = "AaaruPagalHai";
 
 const generateToken = (user) => {
-  return jwt.sign({ id: 1, email: "krunnaljumde24" }, SECRET_KEY, {
+  return jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, {
     algorithm: "HS256",
-    expiresIn: "2m",
+    expiresIn: "1m",
   });
 };
 

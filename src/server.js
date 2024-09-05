@@ -23,7 +23,7 @@ app.use(
 );
 
 app.use(cors({ origin: "http://localhost:5173" }));
-app.use(AuthRouter);
+app.use("/auth/api", AuthRouter);
 
 app.get("/test", (req, res) => {
   console.log("test api");
