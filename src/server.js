@@ -2,6 +2,7 @@ const express = require("express");
 const bodyparser = require("body-parser");
 const cors = require("cors");
 const { AuthRouter } = require("./router/AuthRouter");
+const UserRouter = require("./router/UserRouter.js");
 const mongoConnect = require("./database/mongooseConnection.js");
 const session = require("express-session");
 
@@ -24,6 +25,7 @@ app.use(
 
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use("/auth/api", AuthRouter);
+app.use("/user/api", UserRouter);
 
 app.get("/test", (req, res) => {
   console.log("test api");

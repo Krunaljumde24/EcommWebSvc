@@ -5,7 +5,7 @@ const SECRET_KEY = "AaaruPagalHai";
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, {
     algorithm: "HS256",
-    expiresIn: "1m",
+    expiresIn: "10m",
   });
 };
 
