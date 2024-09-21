@@ -136,10 +136,11 @@ AuthRouter.post("/checkSecurityQuestions", async (req, res) => {
     if (userObj) {
       // check if security question set or not
       if (userObj.isSecQueSet) {
-        res.status(200).send({
+        let secResp = {
           secQue1: userObj.secQue1,
           secQue2: userObj.secQue2,
-        });
+        };
+        res.status(200).send(secResp);
       } else {
         res
           .status(400)
@@ -155,12 +156,36 @@ AuthRouter.post("/checkSecurityQuestions", async (req, res) => {
   // if no response set user not exists
 });
 
-AuthRouter.post("/updatePassword", (req, res) => {
-  // accept username, email, security questions answer, password
+AuthRouter.post("/checkSecurityAnswers", async (req, res) => {
+  // accept  email, security questions & answer
   // validate req
-  // if securituy question are not set then error
-  // check if answers are correct or not
-  // update the password
+  if (
+    Object.keys(req.body).length != 0 &&
+    Object.keys(req.body).toString().includes("email") &&
+    Object.keys(req.body).toString().includes("secQue1") &&
+    Object.keys(req.body).toString().includes("secQue2") &&
+    Object.keys(req.body).toString().includes("secQue1Ans") &&
+    Object.keys(req.body).toString().includes("secQue2Ans")
+  ) {
+    const { email, secQue1, secQue2, secQue1Ans, secQue2Ans } = req.body;
+
+    // find user will all details
+    let user = await UserAuth.find({
+      email: email,
+      secQue1: secQue1,
+      secQue2: secQue2,
+      secQue1Ans: secQue1Ans,
+      secQue2Ans: secQue2Ans,
+    });
+
+    if (user.length > 0) {
+      res.status(200).send("User verfied.");
+    } else {
+      res.status(400).send("User verification failed.");
+    }
+  } else {
+    res.status(400).send("Please send valid user security details.");
+  }
 });
 
 module.exports = { AuthRouter };
