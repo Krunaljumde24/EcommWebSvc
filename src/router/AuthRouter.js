@@ -71,7 +71,7 @@ AuthRouter.post("/login", async (req, res) => {
 
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const user = await UserAuth.findOne({ username });
     console.log(user);
 
     if (user) {
@@ -123,7 +123,7 @@ AuthRouter.get("/verifyToken", (req, res) => {
   }
 });
 
-AuthRouter.post("/checkSecurityQuestions", async (req, res) => {
+AuthRouter.post("/checkEmailToResetPassword", async (req, res) => {
   // accept & validate email address
   if (
     Object.keys(req.body).length > 0 &&
@@ -168,7 +168,6 @@ AuthRouter.post("/checkSecurityAnswers", async (req, res) => {
     Object.keys(req.body).toString().includes("secQue2Ans")
   ) {
     const { email, secQue1, secQue2, secQue1Ans, secQue2Ans } = req.body;
-
     // find user will all details
     let user = await UserAuth.find({
       email: email,
@@ -186,6 +185,38 @@ AuthRouter.post("/checkSecurityAnswers", async (req, res) => {
   } else {
     res.status(400).send("Please send valid user security details.");
   }
+});
+
+AuthRouter.post("/resetPassword", async (req, res) => {
+  if (
+    Object.keys(req.body).length != 0 &&
+    Object.keys(req.body).toString().includes("email") &&
+    Object.keys(req.body).toString().includes("password")
+  ) {
+    const { email, password } = req.body;
+    try {
+      bcrypt.hash(password, 10, async (err, hash) => {
+        let obj = await UserAuth.findOneAndUpdate(
+          { email: email },
+          { $set: { password: hash } },
+          { new: true }
+        );
+        console.log(obj);
+        if (obj) {
+          res.status(201).send("Password updated.");
+        } else {
+          res.status(500).send("Password NOT updated.");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Something went wrong.");
+    }
+  } else {
+    res.status(400).send("Please send valid user security details.");
+  }
+
+  // bcrypt.hash()
 });
 
 module.exports = { AuthRouter };
