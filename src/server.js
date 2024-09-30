@@ -1,30 +1,20 @@
 const express = require("express");
 const bodyparser = require("body-parser");
 const cors = require("cors");
+const dotenv = require("dotenv");
 const { AuthRouter } = require("./router/AuthRouter");
 const UserRouter = require("./router/UserRouter.js");
 const ProductRouter = require("./router/ProductRouter.js");
 const mongoConnect = require("./database/mongooseConnection.js");
-const session = require("express-session");
 
 const app = express();
+dotenv.config();
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
-app.use(
-  session({
-    secret: "my secret string",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: false,
-      maxAge: 60000 * 2,
-    },
-  })
-);
+app.use(cors());
 
-app.use(cors({ origin: "http://localhost:5173" }));
 app.use("/auth/api", AuthRouter);
 app.use("/user/api", UserRouter);
 app.use("/product/api", ProductRouter);
@@ -34,7 +24,9 @@ app.get("/test", (req, res) => {
   res.send("test api");
 });
 
-app.listen(8080, () => {
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => {
   mongoConnect();
-  console.log("Server running on 8080 port");
+  console.log(`Server running on ${port} port`);
 });
