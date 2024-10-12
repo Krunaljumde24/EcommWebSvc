@@ -215,8 +215,6 @@ AuthRouter.post("/resetPassword", async (req, res) => {
   } else {
     res.status(400).send("Please send valid user security details.");
   }
-
-  // bcrypt.hash()
 });
 
 module.exports = { AuthRouter };

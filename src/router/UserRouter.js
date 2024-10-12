@@ -1,6 +1,6 @@
 const express = require("express");
 const UserRouter = express.Router();
-const UserModel = require("../model/UserModel");
+const User = require("../model/UserModel");
 
 UserRouter.post("/update-user-details", async (req, res) => {
   if (Object.keys(req.body).length > 0) {
@@ -19,12 +19,12 @@ UserRouter.post("/update-user-details", async (req, res) => {
       zipcode,
     } = req.body;
 
-    const user = await UserModel.findOne(
+    const user = await User.findOne(
       { username: username, email: email },
       { _id: 0, __v: 0, password: 0 }
     );
     if (user) {
-      await UserModel.updateOne(
+      await User.updateOne(
         { username: username, email: email },
         {
           $set: {
@@ -54,9 +54,9 @@ UserRouter.post("/update-user-details", async (req, res) => {
 UserRouter.post("/get-user-details", async (req, res) => {
   if (Object.keys(req.body).length > 0) {
     const { username, email } = req.body;
-    const user = await UserModel.findOne(
+    const user = await User.findOne(
       { username: username, email: email },
-      { _id: 0, __v: 0, password: 0 }
+      { _id: 0, __v: 0 }
     );
     if (user) {
       res.status(200).send(user);
