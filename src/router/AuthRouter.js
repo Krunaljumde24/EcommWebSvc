@@ -112,8 +112,6 @@ AuthRouter.post("/login", async (req, res) => {
 
 AuthRouter.get("/verifyToken", (req, res) => {
   const token = req.headers.token;
-  console.log("token -> ", token);
-
   try {
     let result = verifyToken(token);
     res.status(200).send({ status: "Authorized" });
