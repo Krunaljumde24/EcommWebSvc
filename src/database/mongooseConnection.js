@@ -20,7 +20,7 @@ const mongoConnect = async () => {
     }
   } catch (error) {
     console.log(error);
-    
+
     console.log("failed to connect");
   }
 };

@@ -33,10 +33,7 @@ AuthRouter.post("/signup", async (req, res) => {
           firstName: firstName,
           lastName: lastName,
         });
-        console.log(req.body);
-
         let obj = await userObj.save();
-        console.log(obj);
         if (obj) {
           bcrypt.hash(password, 10, async (err, hash) => {
             const authObj = new UserAuth({
@@ -46,7 +43,6 @@ AuthRouter.post("/signup", async (req, res) => {
             });
             try {
               let obj = await authObj.save();
-              console.log(obj);
               res.status(201).send("User has been created");
             } catch (error) {
               res.status(500).send(error.message);
@@ -72,7 +68,6 @@ AuthRouter.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await UserAuth.findOne({ username });
-    console.log(user);
 
     if (user) {
       const passwordMatch = await bcrypt.compare(password, user.password);
@@ -199,7 +194,6 @@ AuthRouter.post("/resetPassword", async (req, res) => {
           { $set: { password: hash } },
           { new: true }
         );
-        console.log(obj);
         if (obj) {
           res.status(201).send("Password updated.");
         } else {
