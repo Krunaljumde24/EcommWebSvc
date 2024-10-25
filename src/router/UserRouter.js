@@ -1,6 +1,16 @@
 const express = require("express");
 const UserRouter = express.Router();
 const User = require("../model/UserModel");
+const { configDotenv } = require("dotenv");
+
+const cloudinary = require('cloudinary').v2;
+configDotenv()
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+})
 
 UserRouter.post("/get-user-details", async (req, res) => {
   if (Object.keys(req.body).length > 0) {
@@ -29,7 +39,6 @@ UserRouter.post("/update-user-details", async (req, res) => {
   }
 
   if (Object.keys(req.body).length > 0) {
-
     const {
       uName,
       email,
@@ -55,7 +64,7 @@ UserRouter.post("/update-user-details", async (req, res) => {
             address: address,
             city: city,
             country: country,
-            // dateOfBirth: new Date()
+            dateOfBirth: dob,
             email: email,
             firstName: fName,
             gender: gender,
@@ -66,7 +75,11 @@ UserRouter.post("/update-user-details", async (req, res) => {
             zipCode: zipcode
           }
         });
-        setResp(200, user);
+        if (status && status.modifiedCount > 0) {
+          setResp(200, 'User details updated.');
+        } else {
+          setResp(304, 'Failed to update the user details.');
+        }
       } else {
         setResp(400, "User does not exists.");
       }
@@ -78,4 +91,34 @@ UserRouter.post("/update-user-details", async (req, res) => {
   }
   res.status(resp.status).send(resp.message);
 })
+
+UserRouter.post('/upload-profile-pic', (req, res) => {
+  if (req.body && Object.keys(req.body).length > 0) {
+
+    const { email, username, image } = req.body;
+
+    let fileName = `${username}-profile-img`
+    
+    cloudinary.uploader.upload(image, {
+      public_id: fileName,
+      folder: 'DevSpace/Ecomm/profile'
+    }).then(resp => {
+      console.log(resp)
+    }).catch(error => {
+      console.log(error);
+    })
+
+    // image upload to cloudinary
+    // if uploaded successfully -> mongoDB url update
+    // resonse as per status
+
+    res.status(201).send('Uploaded')
+
+  } else {
+    res.status(400).send("Please send valid user details");
+  }
+
+})
+
+
 module.exports = UserRouter;
